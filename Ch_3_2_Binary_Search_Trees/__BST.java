@@ -1,34 +1,51 @@
 package Ch_3_2_Binary_Search_Trees;
 
 import java.util.*;
+
 import edu.princeton.cs.algs4.*;
 
-public class __BST <K extends Comparable<K>, V> {
+public class __BST<K extends Comparable<K>, V> {
     private class Node {
         Node left, right;
-        K key; V value;
+        K key;
+        V value;
         int size;
-        Node(K k, V v, int sz) { key = k; value = v; size = sz; }
+
+        Node(K k, V v, int sz) {
+            key = k;
+            value = v;
+            size = sz;
+        }
     }
+
     private Node root;
+
     public void put(K k, V v) {
         if (k == null) throw new IllegalArgumentException("符号表中不能插入 null 键");
         root = put(root, k, v);
     }
-    public boolean isEmpty() { return root == null; }
-    private int size(Node n) { return n == null ? 0 : n.size; }
+
+    public boolean isEmpty() {
+        return root == null;
+    }
+
+    private int size(Node n) {
+        return n == null ? 0 : n.size;
+    }
+
     /*
      * 存储键值对
      */
     private Node put(Node n, K k, V v) {
         if (n == null) return new Node(k, v, 1);
         int cmp = k.compareTo(n.key);
-        if      (cmp < 0) n.left = put(n.left, k, v);
+        if (cmp < 0) n.left = put(n.left, k, v);
         else if (cmp > 0) n.right = put(n.right, k, v);
-        else    n.value = v;
+        else n.value = v;
         n.size = 1 + size(n.left) + size(n.right);
         return n;
     }
+
     /*
      * 取出与键关联的值
      */
@@ -36,11 +53,13 @@ public class __BST <K extends Comparable<K>, V> {
         if (isEmpty()) throw new NoSuchElementException("符号表为空");
         return get(root, k);
     }
+
     private V get(Node n, K k) {
         if (n == null) return null;
         int cmp = k.compareTo(n.key);
         return cmp == 0 ? n.value : cmp < 0 ? get(n.left, k) : get(n.right, k);
     }
+
     /*
      * 获取小于等于键 K 的键
      */
@@ -49,6 +68,7 @@ public class __BST <K extends Comparable<K>, V> {
         Node x = floor(root, k);
         return x == null ? null : x.key;
     }
+
     public Node floor(Node n, K k) {
         if (n == null) return null;
         int cmp = k.compareTo(n.key);
@@ -57,6 +77,7 @@ public class __BST <K extends Comparable<K>, V> {
         Node t = floor(n.right, k);
         return t == null ? n : t;
     }
+
     /*
      * 获取大于等于键 K 的键
      */
@@ -65,6 +86,7 @@ public class __BST <K extends Comparable<K>, V> {
         Node x = ceiling(root, k);
         return x == null ? null : x.key;
     }
+
     public Node ceiling(Node n, K k) {
         if (n == null) return null;
         int cmp = k.compareTo(n.key);
@@ -73,20 +95,23 @@ public class __BST <K extends Comparable<K>, V> {
         Node t = ceiling(n.left, k);
         return t == null ? n : t;
     }
+
     /*
      * 获取排名为 k 的键
      */
-    public K select(int k) { 
+    public K select(int k) {
         if (k < 0 || k >= size(root)) throw new IllegalArgumentException("");
         return select(root, k).key;
     }
+
     private Node select(Node n, int k) {
         if (n == null) return null;
         int leftTreeSize = size(n.left);
-        if      (k < leftTreeSize) return select(n.left, k);
+        if (k < leftTreeSize) return select(n.left, k);
         else if (k > leftTreeSize) return select(n.right, k - leftTreeSize - 1);
-        else    return n;
+        else return n;
     }
+
     /*
      * 排名
      */
@@ -94,41 +119,54 @@ public class __BST <K extends Comparable<K>, V> {
         if (k == null) throw new IllegalArgumentException("符号表中不能有 null 键");
         return rank(root, k);
     }
+
     private int rank(Node n, K k) {
         if (n == null) return 0;
         int cmp = k.compareTo(n.key);
-        if      (cmp < 0) return rank(n.left, k);
+        if (cmp < 0) return rank(n.left, k);
         else if (cmp > 0) return 1 + size(n.left) + rank(n.right, k);
-        else    return size(n.left);
+        else return size(n.left);
     }
+
     /*
      * 删除最小键
      */
-    public void deleteMin() { root = deleteMin(root); }
+    public void deleteMin() {
+        root = deleteMin(root);
+    }
+
     private Node deleteMin(Node x) {
         if (x.left == null) return x.right;
         x.left = deleteMin(x.left);
         x.size = size(x.left) + size(x.right) + 1;
         return x;
     }
+
     /*
      * 删除最大键
      */
-    public void deleteMax() { root = deleteMax(root); }
+    public void deleteMax() {
+        root = deleteMax(root);
+    }
+
     private Node deleteMax(Node x) {
         if (x.right == null) return x.left;
         x.right = deleteMax(x.right);
         x.size = 1 + size(x.left) + size(x.right) + 1;
         return x;
-    } 
+    }
+
     /*
      * 删除给定结点
      */
-    public void delete(K k) { root = delete(root, k); }
+    public void delete(K k) {
+        root = delete(root, k);
+    }
+
     private Node delete(Node n, K k) {
         if (n == null) return null;
         int cmp = k.compareTo(n.key);
-        if      (cmp < 0) n.left = delete(n.left, k);
+        if (cmp < 0) n.left = delete(n.left, k);
         else if (cmp > 0) n.right = delete(n.right, k);
         else {
             if (n.right == null) return n.left;
@@ -141,15 +179,20 @@ public class __BST <K extends Comparable<K>, V> {
         n.size = 1 + size(n.left) + size(n.right);
         return n;
     }
+
     /*
      * 获取可供遍历的键
      */
-    public Iterable<K> keys() { return keys(min(), max()); }
+    public Iterable<K> keys() {
+        return keys(min(), max());
+    }
+
     public Iterable<K> keys(K lo, K hi) {
         LinkedList<K> list = new LinkedList<K>();
         keys(root, list, lo, hi);
         return list;
     }
+
     private void keys(Node x, LinkedList<K> list, K lo, K hi) {
         if (x == null) return;
         int cmplo = lo.compareTo(x.key);
@@ -158,61 +201,89 @@ public class __BST <K extends Comparable<K>, V> {
         if (cmplo <= 0 && cmphi <= 0) list.add(x.key);
         if (cmphi < 0) keys(x.right, list, lo, hi);
     }
+
     /*
      * 先序遍历
      */
-    public void travPre(Visit<K, V> visit) { travPre(root, visit); }
+    public void travPre(Visit<K, V> visit) {
+        travPre(root, visit);
+    }
+
     private void travPre(Node n, Visit<K, V> visit) {
         if (n == null) return;
         visit.visit(n.key, n.value, n.size);
         travPre(n.left, visit);
         travPre(n.right, visit);
     }
+
     /*
      * 中序遍历
      */
-    public void travIn(Visit<K, V> visit) { travIn(root, visit); }
+    public void travIn(Visit<K, V> visit) {
+        travIn(root, visit);
+    }
+
     private void travIn(Node n, Visit<K, V> visit) {
         if (n == null) return;
         travIn(n.left, visit);
         visit.visit(n.key, n.value, n.size);
         travIn(n.right, visit);
     }
+
     /*
      * 后序遍历
      */
-    public void travPost(Visit<K, V> visit) { travPost(root, visit); }
+    public void travPost(Visit<K, V> visit) {
+        travPost(root, visit);
+    }
+
     private void travPost(Node n, Visit<K, V> visit) {
         if (n == null) return;
         travIn(n.left, visit);
         travIn(n.right, visit);
         visit.visit(n.key, n.value, n.size);
     }
+
     /*
      * 获取最小的键
      */
-    public K min() { return isEmpty() ? null : min(root).key; }
-    private Node min(Node n) { return n.left == null ? n : min(n.left); }
+    public K min() {
+        return isEmpty() ? null : min(root).key;
+    }
+
+    private Node min(Node n) {
+        return n.left == null ? n : min(n.left);
+    }
+
     /*
      * 获取最大的键
      */
-    public K max() { return isEmpty() ? null : max(root).key; }
-    private Node max(Node n) { return n.right == null ? n : max(n.right); }
+    public K max() {
+        return isEmpty() ? null : max(root).key;
+    }
+
+    private Node max(Node n) {
+        return n.right == null ? n : max(n.right);
+    }
+
     public interface Visit<Key, Value> {
         void visit(Key k, Value v, int size);
     }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         toString(root, sb);
         sb.append(String.format("尺寸 = %d\n", size(root)));
         return sb.toString();
     }
+
     public void toString(Node n, StringBuilder sb) {
         if (n == null) return;
         toString(n.left, sb);
         sb.append(String.format("{ %3s %3s \tsize = %3d }\n", n.key, n.value, n.size));
         toString(n.right, sb);
     }
+
     public static void main(String[] args) {
         __BST<String, Integer> bst = new __BST<String, Integer>();
         bst.put("S", 0);
@@ -259,7 +330,7 @@ public class __BST <K extends Comparable<K>, V> {
         bst.delete("L");
         bst.delete("P");
         StdOut.println(bst);
-        for (String key : bst.keys("C", "S")) 
+        for (String key : bst.keys("C", "S"))
             StdOut.printf("{ %s  %s }\n", key, bst.get(key));
         StdOut.println("\n\n");
         for (String key : bst.keys())
